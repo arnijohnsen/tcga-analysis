@@ -21,7 +21,5 @@ uc.files <- cancer.file.names[sub(".*TCGA", "TCGA",
                                   sub("-01A-[A-Z0-9]{3}-[A-Z0-9]{4}-[0-9]{2}.*", "",
                                   cancer.file.names)) %in% unmatched.barcodes]
 
-save(mn.files, file="../parsed-data/BRCA/methylation/annotation/mn-files.Rdata")
-save(mc.files, file="../parsed-data/BRCA/methylation/annotation/mc-files.Rdata")
-save(uc.files, file="../parsed-data/BRCA/methylation/annotation/uc-files.Rdata")
+save(mn.files, mc.files, uc.files, file="../parsed-data/BRCA/annotation/methylation-files.Rdata")
 quit(save="no")

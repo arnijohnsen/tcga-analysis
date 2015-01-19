@@ -29,5 +29,5 @@ promoter.probes    <- probe.annotations$TargetID[probe.annotations$status == "pr
 sorted.probes <- list(bi = body.island.probes, bs = body.shore.probes, bn = body.none.probes, en = enhancer.probes, pr = promoter.probes)
 
 # Save as .Rdata
-save(sorted.probes, file="../parsed-data/BRCA/methylation/sorted-probes.txt")
+save(sorted.probes, file="../parsed-data/BRCA/annotation/sorted-probes.Rdata")
 quit(save="no")
