@@ -4,8 +4,8 @@
 #  x Enable search for probes
 #  x Don't reload files
 #  - Allow user to select which types (enhancer, promoter,..) are used
-#  - Load only needed files
-#  - Don't plot empty plots
+#  x Load only needed files
+#  x Do't plot empty plots
 #  - Implement new expression reading scripts and datafiles (should be simple)
 #  - Enable abline
 #  - Add regression statistics to plot
@@ -15,7 +15,9 @@
 #  - Write this as a function maybe?
 
 # Should be load() with Rdata file
-linked.probes.genes <- read.table("../Rdata/BRCA-new/probe-annotation/linked-probes-genes.txt", stringsAsFactors=F)
+if(!exists("linked.probes.genes")){
+  linked.probes.genes <- read.table("../Rdata/BRCA-new/probe-annotation/linked-probes-genes.txt", stringsAsFactors=F)
+}
 
 cat("Loading expression\n")
 if(!exists("BRCA.NEA")){
@@ -34,9 +36,11 @@ for(set in c("mn","mc","uc")){
   }
 }
 
-mn.list <- list(body.island=mn.bi, body.shore=mn.bs, body.none=mn.bn, enhancer=mn.en, promoter=mn.pr)
-mc.list <- list(body.island=mc.bi, body.shore=mc.bs, body.none=mc.bn, enhancer=mc.en, promoter=mc.pr)
-uc.list <- list(body.island=uc.bi, body.shore=uc.bs, body.none=uc.bn, enhancer=uc.en, promoter=uc.pr)
+if(!exists("mn.list")){
+  mn.list <- list(body.island=mn.bi, body.shore=mn.bs, body.none=mn.bn, enhancer=mn.en, promoter=mn.pr)
+  mc.list <- list(body.island=mc.bi, body.shore=mc.bs, body.none=mc.bn, enhancer=mc.en, promoter=mc.pr)
+  uc.list <- list(body.island=uc.bi, body.shore=uc.bs, body.none=uc.bn, enhancer=uc.en, promoter=uc.pr)
+}
 
 search <- readline("Enter gene or probe name: ")
 search <- paste("^", search, "$", sep="")
@@ -81,10 +85,14 @@ for(i in idx){
 
   ymax <- max(c(y.mn.plot, y.mc.plot, y.uc.plot))
 
-  plot(x.mn.plot, y.mn.plot, xlim=c(0,100), ylim=c(0,ymax), col=rgb(0,0,1,0.5), pch=20)
-  points(x.mc.plot, y.mc.plot, col=rgb(0,1,0,0.5), pch=20)
-  points(x.uc.plot, y.uc.plot, col=rgb(1,0,0,0.5), pch=20)
+  if(!all(is.na(c(x.mn.plot,x.mc.plot,x.uc.plot)))){
+    plot(x.mn.plot, y.mn.plot, xlim=c(0,100), ylim=c(0,ymax), col=rgb(0,0,1,0.5), pch=20)
+    points(x.mc.plot, y.mc.plot, col=rgb(0,1,0,0.5), pch=20)
+    points(x.uc.plot, y.uc.plot, col=rgb(1,0,0,0.5), pch=20)
 
-  cat("Press [enter] for next plot")
-  line <- readline()
+    cat("Press [enter] for next plot")
+    line <- readline()
+  } else {
+    cat("All methylation values are NA\n")
+  }
 }
