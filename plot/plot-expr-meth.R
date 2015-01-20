@@ -1,10 +1,12 @@
 # TODO:
-#  - Enable plotting of body and enchancers
-#  - Read search string from command line
-#  - Enable search for probes
-#  - Don't reload files
+#  x Enable plotting of body and enchancers
+#  x Read search string from command line
+#  x Enable search for probes
+#  x Don't reload files
+#  - Allow user to select which types (enhancer, promoter,..) are used
 #  - Load only needed files
-#  - Implement new expression reading script (should be simple)
+#  - Don't plot empty plots
+#  - Implement new expression reading scripts and datafiles (should be simple)
 #  - Enable abline
 #  - Add regression statistics to plot
 #  - Add annotation to plot
@@ -15,22 +17,31 @@
 # Should be load() with Rdata file
 linked.probes.genes <- read.table("../Rdata/BRCA-new/probe-annotation/linked-probes-genes.txt", stringsAsFactors=F)
 
-# Should be read from command line
-search <- "BRCA" 
-
-# Should support probe search
-idx <- grep(search, linked.probes.genes$gene)
-
 cat("Loading expression\n")
-load("../Rdata/BRCA/data/BRCA-NEA.Rdata")
-load("../Rdata/BRCA/data/BRCA-CEA.Rdata")
+if(!exists("BRCA.NEA")){
+  load("../Rdata/BRCA/data/BRCA-NEA.Rdata")
+}
+if(!exists("BRCA.CEA")){
+  load("../Rdata/BRCA/data/BRCA-CEA.Rdata")
+}
 
 cat("Loading methylation\n")
 for(set in c("mn","mc","uc")){
   for(type in c("bi", "bs", "bn", "en", "pr")){
-    load(paste("../parsed-data/BRCA/methylation/", set, "-", type, ".Rdata", sep=""))
+    if(!exists(paste(set,".",type,sep=""))){
+      load(paste("../parsed-data/BRCA/methylation/", set, "-", type, ".Rdata", sep=""))
+    }
   }
 }
+
+mn.list <- list(body.island=mn.bi, body.shore=mn.bs, body.none=mn.bn, enhancer=mn.en, promoter=mn.pr)
+mc.list <- list(body.island=mc.bi, body.shore=mc.bs, body.none=mc.bn, enhancer=mc.en, promoter=mc.pr)
+uc.list <- list(body.island=uc.bi, body.shore=uc.bs, body.none=uc.bn, enhancer=uc.en, promoter=uc.pr)
+
+search <- readline("Enter gene or probe name: ")
+search <- paste("^", search, "$", sep="")
+
+idx <- c(grep(search, linked.probes.genes$gene), grep(search, linked.probes.genes$probe))
 
 for(i in idx){
   probe  <- linked.probes.genes$probe[i]
@@ -38,44 +49,42 @@ for(i in idx){
   status <- linked.probes.genes$status[i]
   cat("Probe:", probe, "\tgene:", gene, "\tstatus: ", status, "\n")
 
-  if(status=="promoter"){
-    # Matched normal
-    x.mn.all <- mn.pr[[probe]]
-    names(x.mn.all) <- substring(rownames(mn.pr),1,14)
-    y.mn.all <- BRCA.NEA[[gene]]
-    names(y.mn.all) <- rownames(BRCA.NEA)
-    mn.samples <- intersect(names(x.mn.all),names(y.mn.all))
+  # Matched normal
+  x.mn.all <- mn.list[[status]][[probe]]
+  names(x.mn.all) <- substring(rownames(mn.list[[status]]),1,14)
+  y.mn.all <- BRCA.NEA[[gene]]
+  names(y.mn.all) <- rownames(BRCA.NEA)
+  mn.samples <- intersect(names(x.mn.all),names(y.mn.all))
 
-    x.mn.plot <- x.mn.all[mn.samples]
-    y.mn.plot <- y.mn.all[mn.samples]
+  x.mn.plot <- x.mn.all[mn.samples]
+  y.mn.plot <- y.mn.all[mn.samples]
 
-    # Matched cancer
-    x.mc.all <- mc.pr[[probe]]
-    names(x.mc.all) <- substring(rownames(mc.pr),1,14)
-    y.mc.all <- BRCA.CEA[[gene]]
-    names(y.mc.all) <- rownames(BRCA.CEA)
-    mc.samples <- intersect(names(x.mc.all),names(y.mc.all))
+  # Matched cancer
+  x.mc.all <- mc.list[[status]][[probe]]
+  names(x.mc.all) <- substring(rownames(mc.list[[status]]),1,14)
+  y.mc.all <- BRCA.CEA[[gene]]
+  names(y.mc.all) <- rownames(BRCA.CEA)
+  mc.samples <- intersect(names(x.mc.all),names(y.mc.all))
 
-    x.mc.plot <- x.mc.all[mc.samples]
-    y.mc.plot <- y.mc.all[mc.samples]
+  x.mc.plot <- x.mc.all[mc.samples]
+  y.mc.plot <- y.mc.all[mc.samples]
 
-    # Unmatched cancer
-    x.uc.all <- uc.pr[[probe]]
-    names(x.uc.all) <- substring(rownames(uc.pr),1,14)
-    y.uc.all <- BRCA.CEA[[gene]]
-    names(y.uc.all) <- rownames(BRCA.CEA)
-    uc.samples <- intersect(names(x.uc.all),names(y.uc.all))
+  # Unmatched cancer
+  x.uc.all <- uc.list[[status]][[probe]]
+  names(x.uc.all) <- substring(rownames(uc.list[[status]]),1,14)
+  y.uc.all <- BRCA.CEA[[gene]]
+  names(y.uc.all) <- rownames(BRCA.CEA)
+  uc.samples <- intersect(names(x.uc.all),names(y.uc.all))
 
-    x.uc.plot <- x.uc.all[uc.samples]
-    y.uc.plot <- y.uc.all[uc.samples]
+  x.uc.plot <- x.uc.all[uc.samples]
+  y.uc.plot <- y.uc.all[uc.samples]
 
-    ymax <- max(c(y.mn.plot, y.mc.plot, y.uc.plot))
+  ymax <- max(c(y.mn.plot, y.mc.plot, y.uc.plot))
 
-    plot(x.mn.plot, y.mn.plot, xlim=c(0,100), ylim=c(0,ymax), col=rgb(0,0,1,0.5), pch=20)
-    points(x.mc.plot, y.mc.plot, col=rgb(0,1,0,0.5), pch=20)
-    points(x.uc.plot, y.uc.plot, col=rgb(1,0,0,0.5), pch=20)
+  plot(x.mn.plot, y.mn.plot, xlim=c(0,100), ylim=c(0,ymax), col=rgb(0,0,1,0.5), pch=20)
+  points(x.mc.plot, y.mc.plot, col=rgb(0,1,0,0.5), pch=20)
+  points(x.uc.plot, y.uc.plot, col=rgb(1,0,0,0.5), pch=20)
 
-    cat("Press [enter] for next plot")
-    line <- readline()
-  }
+  cat("Press [enter] for next plot")
+  line <- readline()
 }
