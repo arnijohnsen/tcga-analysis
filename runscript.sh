@@ -7,9 +7,9 @@ then
   echo "#PBS -N arj32"  >> .submission
   if [ -z $2 ]
   then
-    echo "#PBS -l nodes=1,walltime=6:00:00" >> .submission
+    echo "#PBS -l nodes=1" >> .submission
   else
-    echo "#PBS -l nodes=compute-0-"$2",walltime=6:00:00" >> .submission
+    echo "#PBS -l nodes=compute-0-"$2"" >> .submission
   fi
   echo  >> .submission
   echo  >> .submission
