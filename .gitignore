@@ -1,5 +1,6 @@
-# R output files
+# R output and data files
 *.Rout
+*.Rdata
 
 # Qsub output and error reports
 arj32.*
