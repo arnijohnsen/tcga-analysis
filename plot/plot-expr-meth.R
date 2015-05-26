@@ -13,6 +13,7 @@
 #  - Enable option to show only matches samples and draw line between matching
 #  - Use ggplot2 instead of plot
 #  - Write this as a function maybe?
+#  - Add mn and mc plot to the side
 
 # Should be load() with Rdata file
 if(!exists("linked.probes.genes")){
