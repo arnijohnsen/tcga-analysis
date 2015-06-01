@@ -65,9 +65,6 @@ VC.n <- vennCounts(DF.n)
 VC.b <- vennCounts(DF.b)
 overlap <- data.table(cbind(VC.c, VC.n[,6], VC.b[,6]))
 setnames(overlap, c("cnv", "expr", "meth", "muta", "mirn", "c", "n", "b"))
-overlap$c.sum <- rev(cumsum(rev(overlap$c)))
-overlap$n.sum <- rev(cumsum(rev(overlap$n)))
-overlap$b.sum <- rev(cumsum(rev(overlap$b)))
 
 sink(file=paste(parsed.data.dir, cancer.type, 
                 "/info/participant-overlap.txt", sep=""))
