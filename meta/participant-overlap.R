@@ -66,9 +66,22 @@ VC.b <- vennCounts(DF.b)
 overlap <- data.table(cbind(VC.c, VC.n[,6], VC.b[,6]))
 setnames(overlap, c("cnv", "expr", "meth", "muta", "mirn", "c", "n", "b"))
 
-sink(file=paste(parsed.data.dir, cancer.type, 
-                "/info/participant-overlap.txt", sep=""))
-print(overlap)
-sink()
-#write.table(overlap, paste(parsed.data.dir, cancer.type, 
-#            "/info/participant-overlap.txt", sep=""), quote=F, row.names=F)
+n <- dim(overlap)[1]
+
+overlap$c.sum <- rep(0, n)
+overlap$n.sum <- rep(0, n)
+overlap$b.sum <- rep(0, n)
+
+for (i in 1:n){
+  idx <- sapply(1:32, function(x){
+    return(all(overlap[x,1:5,with=F] >= overlap[i,1:5,with=F]))
+  })
+  overlap$c.sum[i] <- sum(overlap$c[idx])
+  overlap$n.sum[i] <- sum(overlap$n[idx])
+  overlap$b.sum[i] <- sum(overlap$b[idx])
+}
+
+#sink(file=paste(parsed.data.dir, cancer.type, 
+#                "/info/participant-overlap.txt", sep=""))
+#print(overlap)
+#sink()
