@@ -44,9 +44,9 @@ for(i in 1:n){
 }
 
 # Assign systematic names to data frames and save ------------------------------
-assign(paste(cancer.type, ".cnv.cancer", sep=""), cancer.list)
-assign(paste(cancer.type, ".cnv.normal", sep=""), normal.list)
-save(list = paste(cancer.type, ".cnv.cancer", sep=""),
-     file = paste(output.dir, cancer.type, "-cnv-cancer.Rdata", sep=""))
-save(list = paste(cancer.type, ".cnv.normal", sep=""),
-     file = paste(output.dir, cancer.type, "-cnv-normal.Rdata", sep=""))
+assign(paste(cancer.type, ".cnvl.cancer", sep=""), cancer.list)
+assign(paste(cancer.type, ".cnvl.normal", sep=""), normal.list)
+save(list = paste(cancer.type, ".cnvl.cancer", sep=""),
+     file = paste(output.dir, cancer.type, "-cnvl-cancer.Rdata", sep=""))
+save(list = paste(cancer.type, ".cnvl.normal", sep=""),
+     file = paste(output.dir, cancer.type, "-cnvl-normal.Rdata", sep=""))
