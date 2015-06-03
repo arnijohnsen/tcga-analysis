@@ -9,38 +9,78 @@ data.types   <- c("clin", "cnv", "expr", "meth", "muta", "mirn")
 status.list <- list()
 
 for (c.type in cancer.types) {
-  raw    <- rep(FALSE, length(data.types))
-  Rdata  <- rep(FALSE, length(data.types))
-  sqlite <- rep(FALSE, length(data.types))
-  names(raw)    <- data.types
-  names(Rdata)  <- data.types
-  names(sqlite) <- data.types
+  raw   <- rep(" ", length(data.types))
+  Rdata <- rep(" ", length(data.types))
+  sql   <- rep(" ", length(data.types))
+  names(raw)   <- data.types
+  names(Rdata) <- data.types
+  names(sql)   <- data.types
 
   for (d.type in data.types) {
     # Check files in raw-data --------------------------------------------------
-    raw[d.type] <- file.exists(paste(raw.data.dir, c.type, "/", d.type,
-                                 "/README_DCC.txt", sep=""))
+    if (d.type == "clin"){
+      check.file <- paste(raw.data.dir, c.type,
+                          "/clin/nationwidechildrens.org_clinical_patient_",
+                          c.type, ".txt", sep="")
+      if (file.exists(check.file)) {
+        raw[d.type] <- "x"
+      }
+    } else {
+      check.file <- paste(raw.data.dir, c.type, "/", d.type,
+                          "/FILE_SAMPLE_MAP.txt", sep="")
+      if (file.exists(check.file)) {
+        raw[d.type] <- "x"
+      }
+    }
 
     # Check Rdata files in parsed-data -----------------------------------------
-    Rdata[d.type] <- file.exists(paste(parsed.data.dir, c.type, "/", d.type,
-                                       "/", c.type, "-", d.type,
-                                       "-cancer.Rdata", sep=""))
     if (d.type == "cnv") {
-      Rdata[d.type] <- file.exists(paste(parsed.data.dir, c.type, "/", d.type,
-                                         "/", c.type, "-", "cnvw",
-                                         "-cancer.Rdata", sep=""))
+      check.file.c <- paste(parsed.data.dir, c.type, "/", d.type, "/", c.type,
+                            "-", "cnvw-cancer.Rdata", sep="")
+      check.file.n <- paste(parsed.data.dir, c.type, "/", d.type, "/", c.type,
+                            "-", "cnvw-normal.Rdata", sep="")
+    } else {
+      check.file.c <- paste(parsed.data.dir, c.type, "/", d.type, "/", c.type,
+                            "-", d.type, "-cancer.Rdata", sep="")
+      check.file.n <- paste(parsed.data.dir, c.type, "/", d.type, "/", c.type,
+                            "-", d.type, "-normal.Rdata", sep="")
+    }
+    if (file.exists(check.file.c) && file.exists(check.file.n)) {
+      Rdata[d.type] <- "b"
+    } else if (file.exists(check.file.c) && !file.exists(check.file.n)) {
+      Rdata[d.type] <- "c"
+    } else if (!file.exists(check.file.c) && file.exists(check.file.n)) {
+      Rdata[d.type] <- "n"
+    }
+
+    # Check SQLite database in parsed-data -------------------------------------
+    sql.file <- paste(parsed.data.dir, c.type, "/", c.type, ".sqlite", sep="")
+    if (file.exists(sql.file)){
+      db <- dbConnect(SQLite(), dbname=sql.file)
+      tables <- dbListTables(db)
+      dbDisconnect(db)
+      for (d.type in data.types) {
+        if (d.type == "cnv") {
+          check.c <- any(grepl(paste("cnvw_cancer", sep=""), tables))
+          check.n <- any(grepl(paste("cnvw_normal", sep=""), tables))
+        } else {
+          check.c <- any(grepl(paste(d.type, "_cancer", sep=""), tables))
+          check.n <- any(grepl(paste(d.type, "_normal", sep=""), tables))
+        }
+        if (check.c && check.n) {
+          sql[d.type] <- "b"
+        } else if (check.c && !check.n) {
+          sql[d.type] <- "c"
+        } else if (!check.c && check.n) {
+          sql[d.type] <- "n"
+        }
+      }
     }
   }
-  # Check SQLite database in parsed-data -------------------------------------
-  sql.file <- paste(parsed.data.dir, c.type, "/", c.type, ".sqlite", sep="")
-  if (file.exists(sql.file)){
-    db <- dbConnect(SQLite(), dbname=sql.file)
-    tables <- dbListTables(db)
-    dbDisconnect(db)
-    for (d.type in data.types) {
-      sqlite[d.type] <- any(grepl(d.type, tables))
-    }
-  }
-  status.list[[c.type]] <- data.frame(raw, Rdata, sqlite)
+  status.list[[c.type]] <- data.frame(raw   = paste("[ ", raw,   " ]", sep=""),
+                                      Rdata = paste("[ ", Rdata, " ]", sep=""),
+                                      sql   = paste("[ ", sql,   " ]", sep=""),
+                                      row.names = data.types)
 }
+# Output status to console -----------------------------------------------------
 print(status.list)
