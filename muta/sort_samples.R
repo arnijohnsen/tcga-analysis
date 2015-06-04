@@ -1,30 +1,30 @@
 library(data.table)
 
 # Define cancer type, raw and parsed data directories --------------------------
-cancer.type <- "brca"
-raw.data.dir    <- "/share/scratch/arj32/raw_data/"
-parsed.data.dir <- "/share/scratch/arj32/parsed_data/"
-source.file.path<- "/muta/Somatic_Mutations/WUSM__IlluminaGA_DNASeq_curated/Level_2/"
-source.file.dir <- paste(raw.data.dir, cancer.type, source.file.path, sep="")
-output.dir      <- paste(parsed.data.dir, cancer.type, "/muta/",  sep="")
+cancer_type <- "brca"
+raw_data_dir    <- "/share/scratch/arj32/raw_data/"
+parsed_data_dir <- "/share/scratch/arj32/parsed_data/"
+source_file_path<- "/muta/Somatic_Mutations/WUSM__IlluminaGA_DNASeq_curated/Level_2/"
+source_file_dir <- paste(raw_data_dir, cancer_type, source_file_path, sep="")
+output_dir      <- paste(parsed_data_dir, cancer_type, "/muta/",  sep="")
 
 # Load file and sample information ---------------------------------------------
-file.sample.map <- fread(paste(raw.data.dir, cancer.type,
+file_sample_map <- fread(paste(raw_data_dir, cancer_type,
                                "/muta/FILE_SAMPLE_MAP.txt", sep=""))
-setnames(file.sample.map, c("filename", "barcode"))
+setnames(file_sample_map, c("filename", "barcode"))
 
 # Read only file ---------------------------------------------------------------
-database.info <- fread(paste(source.file.dir, file.sample.map[1,filename], sep=""), 
+database_info <- fread(paste(source_file_dir, file_sample_map[1,filename], sep=""),
                      select=c(16,17))
-setnames(database.info, c("cancer.barcode", "normal.barcode"))
-database.info[,participant:=substr(cancer.barcode,1,12)]
-setcolorder(database.info, c("participant", "cancer.barcode", "normal.barcode"))
+setnames(database_info, c("cancer_barcode", "normal_barcode"))
+database_info[,participant:=substr(cancer_barcode,1,12)]
+setcolorder(database_info, c("participant", "cancer_barcode", "normal_barcode"))
 
 # Filter unique samples
-setkey(database.info, participant, cancer.barcode, normal.barcode)
-database.info.unq <- unique(database.info)
+setkey(database_info, participant, cancer_barcode, normal_barcode)
+database_info_unq <- unique(database_info)
 
 # Assign systematic names to data frames and save ------------------------------
-write.table(database.info.unq, paste(parsed.data.dir, cancer.type,
+write.table(database_info_unq, paste(parsed_data_dir, cancer_type,
                                      "/info/muta_participants.txt", sep=""),
             quote=F, row.names=F)

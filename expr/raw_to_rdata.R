@@ -1,67 +1,67 @@
 library(data.table)
 
 # Define cancer type, raw and parsed data directories --------------------------
-cancer.type <- "brca"
-raw.data.dir    <- "/share/scratch/arj32/raw_data/"
-parsed.data.dir <- "/share/scratch/arj32/parsed_data/"
-source.file.path<- "/expr/RNASeqV2/UNC__IlluminaHiSeq_RNASeqV2/Level_3/"
-source.file.dir <- paste(raw.data.dir, cancer.type, source.file.path, sep="")
-output.dir      <- paste(parsed.data.dir, cancer.type, "/expr/",  sep="")
+cancer_type <- "brca"
+raw_data_dir    <- "/share/scratch/arj32/raw_data/"
+parsed_data_dir <- "/share/scratch/arj32/parsed_data/"
+source_file_path<- "/expr/RNASeqV2/UNC__IlluminaHiSeq_RNASeqV2/Level_3/"
+source_file_dir <- paste(raw_data_dir, cancer_type, source_file_path, sep="")
+output_dir      <- paste(parsed_data_dir, cancer_type, "/expr/",  sep="")
 
 # Load file and sample information ---------------------------------------------
-file.sample.map <- fread(paste(raw.data.dir, cancer.type,
+file_sample_map <- fread(paste(raw_data_dir, cancer_type,
                                "/expr/FILE_SAMPLE_MAP.txt", sep=""))
-setnames(file.sample.map, c("filename", "barcode"))
-# use only genes.normalized_results
-file.sample.map <- file.sample.map[grep("genes.normalized_results", filename)]
+setnames(file_sample_map, c("filename", "barcode"))
+# use only genes_normalized_results
+file_sample_map <- file_sample_map[grep("genes_normalized_results", filename)]
 
-sample.list <- fread(paste(parsed.data.dir, cancer.type,
+sample_list <- fread(paste(parsed_data_dir, cancer_type,
                                "/info/expr_participants.txt", sep=""))
 
-n <- dim(sample.list)[1]
+n <- dim(sample_list)[1]
 
 # Read one file with all information, use to create data.tables ----------------
 cat("Initiating tables..\n")
-idx.cancer <- which(!is.na(sample.list$cancer.barcode))[1]
-idx.normal <- which(!is.na(sample.list$normal.barcode))[1]
-cancer.barcode <- sample.list$cancer.barcode[idx.cancer]
-normal.barcode <- sample.list$normal.barcode[idx.normal]
-cancer.file <- file.sample.map[barcode==cancer.barcode, filename]
-normal.file <- file.sample.map[barcode==normal.barcode, filename]
+idx_cancer <- which(!is_na(sample_list$cancer_barcode))[1]
+idx_normal <- which(!is_na(sample_list$normal_barcode))[1]
+cancer_barcode <- sample_list$cancer_barcode[idx_cancer]
+normal_barcode <- sample_list$normal_barcode[idx_normal]
+cancer_file <- file_sample_map[barcode==cancer_barcode, filename]
+normal_file <- file_sample_map[barcode==normal_barcode, filename]
 
-cancer.wide <- fread(paste(source.file.dir, cancer.file, sep=""))
-normal.wide <- fread(paste(source.file.dir, normal.file, sep=""))
+cancer_wide <- fread(paste(source_file_dir, cancer_file, sep=""))
+normal_wide <- fread(paste(source_file_dir, normal_file, sep=""))
 
-cancer.wide[,normalized_count:=NULL]
-normal.wide[,normalized_count:=NULL]
+cancer_wide[,normalized_count:=NULL]
+normal_wide[,normalized_count:=NULL]
 
-setnames(cancer.wide, c("gene"))
-setnames(normal.wide, c("gene"))
+setnames(cancer_wide, c("gene"))
+setnames(normal_wide, c("gene"))
 
-cancer.wide[,gene:=gsub("\\|.*", "",gene)]
-normal.wide[,gene:=gsub("\\|.*", "",gene)]
+cancer_wide[,gene:=gsub("\\|.*", "",gene)]
+normal_wide[,gene:=gsub("\\|.*", "",gene)]
 
 # Read all files, drop everything except beta and append as a new column--------
 for(i in 1:n){
   cat("Reading files for participant", i, "of", n, "\n")
-  cancer.barcode <- sample.list$cancer.barcode[i]
-  normal.barcode <- sample.list$normal.barcode[i]
-  cancer.file <- file.sample.map[barcode==cancer.barcode, filename]
-  normal.file <- file.sample.map[barcode==normal.barcode, filename]
-  if(!is.na(cancer.barcode)){
-    tmp <- fread(paste(source.file.dir, cancer.file, sep=""), select=2)
-    cancer.wide[,c(cancer.barcode):=tmp]
+  cancer_barcode <- sample_list$cancer_barcode[i]
+  normal_barcode <- sample_list$normal_barcode[i]
+  cancer_file <- file_sample_map[barcode==cancer_barcode, filename]
+  normal_file <- file_sample_map[barcode==normal_barcode, filename]
+  if(!is_na(cancer_barcode)){
+    tmp <- fread(paste(source_file_dir, cancer_file, sep=""), select=2)
+    cancer_wide[,c(cancer_barcode):=tmp]
   }
-  if(!is.na(normal.barcode)){
-    tmp <- fread(paste(source.file.dir, normal.file, sep=""), select=2)
-    normal.wide[,c(normal.barcode):=tmp]
+  if(!is.na(normal_barcode)){
+    tmp <- fread(paste(source_file_dir, normal_file, sep=""), select=2)
+    normal_wide[,c(normal_barcode):=tmp]
   }
 }
 
 # Assign systematic names to data frames and save ------------------------------
-assign(paste(cancer.type, ".expr.cancer", sep=""), cancer.wide)
-assign(paste(cancer.type, ".expr.normal", sep=""), normal.wide)
-save(list = paste(cancer.type, ".expr.cancer", sep=""),
-     file = paste(output.dir, cancer.type, "_expr_cancer.Rdata", sep=""))
-save(list = paste(cancer.type, ".expr.normal", sep=""),
-     file = paste(output.dir, cancer.type, "_expr_normal.Rdata", sep=""))
+assign(paste(cancer_type, "_expr_cancer", sep=""), cancer_wide)
+assign(paste(cancer_type, "_expr_normal", sep=""), normal_wide)
+save(list = paste(cancer_type, "_expr_cancer", sep=""),
+     file = paste(output_dir, cancer_type, "_expr_cancer.Rdata", sep=""))
+save(list = paste(cancer_type, "_expr_normal", sep=""),
+     file = paste(output_dir, cancer_type, "_expr_normal.Rdata", sep=""))

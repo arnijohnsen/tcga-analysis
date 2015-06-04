@@ -1,13 +1,13 @@
 library(data.table)
 library(RSQLite)
 
-cancer.type <- "brca"
-raw.data.dir    <- "/share/scratch/arj32/raw_data/"
-parsed.data.dir <- "/share/scratch/arj32/parsed_data/"
+cancer_type <- "brca"
+raw_data_dir    <- "/share/scratch/arj32/raw_data/"
+parsed_data_dir <- "/share/scratch/arj32/parsed_data/"
 
 # Open connection to database --------------------------------------------------
-db <- dbConnect(SQLite(), dbname=paste(parsed.data.dir, cancer.type, "/",
-                                       cancer.type, ".sqlite", sep=""))
+db <- dbConnect(SQLite(), dbname=paste(parsed_data_dir, cancer_type, "/",
+                                       cancer_type, ".sqlite", sep=""))
 
 # Check if db contains anything ------------------------------------------------
 if(length(dbListTables(db)) != 0){
@@ -15,22 +15,22 @@ if(length(dbListTables(db)) != 0){
 }
 
 # Read data.tables one by one and add them to SQLite database ------------------
-data.types <- c("cnvw", "expr", "meth", "muta", "mirn")
-data.dirs  <- c("cnv",  "expr", "meth", "muta", "mirn")
-for (i in 1:length(data.types)){
-  cat("Adding", data.types[i], "data..\n")
+data_types <- c("cnvw", "expr", "meth", "muta", "mirn")
+data_dirs  <- c("cnv",  "expr", "meth", "muta", "mirn")
+for (i in 1:length(data_types)){
+  cat("Adding", data_types[i], "data..\n")
   for (j in c("cancer", "normal")){
-    if(!(data.types[i] == "muta" & j == "normal")){
+    if(!(data_types[i] == "muta" & j == "normal")){
       cat("..", j, "\n", sep="")
       cat("....reading\n")
-      load(paste(parsed.data.dir, cancer.type, "/", data.dirs[i], "/",
-                 cancer.type, "_", data.types[i], "_", j, ".Rdata", sep=""))
+      load(paste(parsed_data_dir, cancer_type, "/", data_dirs[i], "/",
+                 cancer_type, "_", data_types[i], "_", j, ".Rdata", sep=""))
       cat("....writing\n")
       dbWriteTable(conn  = db,
-                   name  = paste(data.types[i], "_", j, sep=""),
-                   value = get(paste(cancer.type, data.types[i], j, sep=".")),
-                   row.names = F)
-      rm(list=paste(cancer.type, data.types[i], j, sep="."))
+                   name  = paste(data_types[i], "_", j, sep=""),
+                   value = get(paste(cancer_type, data_types[i], j, sep=".")),
+                   row_names = F)
+      rm(list=paste(cancer_type, data_types[i], j, sep="."))
       gc()
     }
   }

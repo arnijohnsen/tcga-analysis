@@ -1,48 +1,48 @@
 library(data.table)
 
-cancer.type <- "brca"
-raw.data.dir    <- "/share/scratch/arj32/raw_data/"
-parsed.data.dir <- "/share/scratch/arj32/parsed_data/"
+cancer_type <- "brca"
+raw_data_dir    <- "/share/scratch/arj32/raw_data/"
+parsed_data_dir <- "/share/scratch/arj32/parsed_data/"
 
-file.sample.map <- fread(paste(raw.data.dir, cancer.type, "/mirn/FILE_SAMPLE_MAP.txt", sep=""))
+file_sample_map <- fread(paste(raw_data_dir, cancer_type, "/mirn/FILE_SAMPLE_MAP.txt", sep=""))
 
 # use only genes.normalized_results
-file.sample.map <- file.sample.map[grep("mirna.quantification", filename)]
+file_sample_map <- file_sample_map[grep("mirna.quantification", filename)]
 
 # dont use recurrent cancers or files with multiple barcodes
-bad.barcodes <- grepl(",", file.sample.map$barcode) | (substr(file.sample.map$barcode, 14, 15) == "06")
-#bad.barcodes <- grepl(",", file.sample.map$barcode)
-file.sample.map <- file.sample.map[!bad.barcodes]
+bad_barcodes <- grepl(",", file_sample_map$barcode) | (substr(file_sample_map$barcode, 14, 15) == "06")
+#bad_barcodes <- grepl(",", file_sample_map$barcode)
+file_sample_map <- file_sample_map[!bad_barcodes]
 
-database.info <- data.table(participant = unique(substr(file.sample.map$barcode, 1, 12)))
+database_info <- data_table(participant = unique(substr(file_sample_map$barcode, 1, 12)))
 
 # Find cancer barcode
-cancer.barcode <- sapply(database.info$participant, function(x){tmp <- grep(paste(x,"-01",sep=""), file.sample.map$barcode)
+cancer_barcode <- sapply(database_info$participant, function(x){tmp <- grep(paste(x,"-01",sep=""), file_sample_map$barcode)
                                                              if(length(tmp) > 1){
                                                                warning("Sample has more than 1 cancer")
                                                                tmp <- tmp[1]
                                                              }
                                                              if(length(tmp) > 0){
-                                                               file.sample.map$barcode[tmp]
+                                                               file_sample_map$barcode[tmp]
                                                              } else {
                                                                NA
                                                              }
                                                              })
-database.info$cancer.barcode <- unlist(cancer.barcode)
+database_info$cancer_barcode <- unlist(cancer_barcode)
 
 # Find normal barcode
-normal.barcode <- sapply(database.info$participant, function(x){tmp <- grep(paste(x,"-1",sep=""), file.sample.map$barcode)
+normal_barcode <- sapply(database_info$participant, function(x){tmp <- grep(paste(x,"-1",sep=""), file_sample_map$barcode)
                                                              if(length(tmp) > 1){
                                                                warning("Sample has more than 1 normal")
                                                                tmp <- tmp[1]
                                                              }
                                                              if(length(tmp) > 0){
-                                                               file.sample.map$barcode[tmp]
+                                                               file_sample_map$barcode[tmp]
                                                              } else {
                                                                NA
                                                              }
                                                              })
-database.info$normal.barcode <- unlist(normal.barcode)
+database_info$normal_barcode <- unlist(normal_barcode)
 
-write.table(database.info, paste(parsed.data.dir, cancer.type, "/info/mirn_participants.txt", sep=""), quote=F, row.names=F)
+write.table(database_info, paste(parsed_data_dir, cancer_type, "/info/mirn_participants.txt", sep=""), quote=F, row.names=F)
 

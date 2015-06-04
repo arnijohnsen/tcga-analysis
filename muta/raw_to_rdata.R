@@ -1,25 +1,25 @@
 library(data.table)
 
 # Define cancer type, raw and parsed data directories --------------------------
-cancer.type <- "brca"
-raw.data.dir    <- "/share/scratch/arj32/raw_data/"
-parsed.data.dir <- "/share/scratch/arj32/parsed_data/"
-source.file.path<- "/muta/Somatic_Mutations/WUSM__IlluminaGA_DNASeq_curated/Level_2/"
-source.file.dir <- paste(raw.data.dir, cancer.type, source.file.path, sep="")
-output.dir      <- paste(parsed.data.dir, cancer.type, "/muta/",  sep="")
+cancer_type <- "brca"
+raw_data_dir    <- "/share/scratch/arj32/raw_data/"
+parsed_data_dir <- "/share/scratch/arj32/parsed_data/"
+source_file_path<- "/muta/Somatic_Mutations/WUSM__IlluminaGA_DNASeq_curated/Level_2/"
+source_file_dir <- paste(raw_data_dir, cancer_type, source_file_path, sep="")
+output_dir      <- paste(parsed_data_dir, cancer_type, "/muta/",  sep="")
 
 # Load file and sample information ---------------------------------------------
-file.sample.map <- fread(paste(raw.data.dir, cancer.type,
+file_sample_map <- fread(paste(raw_data_dir, cancer_type,
                                "/muta/FILE_SAMPLE_MAP.txt", sep=""))
-setnames(file.sample.map, c("filename", "barcode"))
+setnames(file_sample_map, c("filename", "barcode"))
 
 # Read only file ---------------------------------------------------------------
-mutation <- fread(paste(source.file.dir, file.sample.map[1,filename], sep=""), 
+mutation <- fread(paste(source_file_dir, file_sample_map[1,filename], sep=""),
                   select=c(1,2,5,6,7,9,16,17))
-setnames(mutation, c("gene", "entrez.id", "chrom", "start", "end", 
-                     "type", "cancer.barcode", "normal.barcode"))
+setnames(mutation, c("gene", "entrez_id", "chrom", "start", "end",
+                     "type", "cancer_barcode", "normal_barcode"))
 
 # Assign systematic names to data frames and save ------------------------------
-assign(paste(cancer.type, ".muta.cancer", sep=""), mutation)
-save(list = paste(cancer.type, ".muta.cancer", sep=""),
-     file = paste(output.dir, cancer.type, "_muta_cancer.Rdata", sep=""))
+assign(paste(cancer_type, ".muta_cancer", sep=""), mutation)
+save(list = paste(cancer_type, ".muta_cancer", sep=""),
+     file = paste(output_dir, cancer_type, "_muta_cancer.Rdata", sep=""))
