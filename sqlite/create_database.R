@@ -2,8 +2,8 @@ library(data.table)
 library(RSQLite)
 
 cancer.type <- "brca"
-raw.data.dir    <- "/share/scratch/arj32/raw-data/"
-parsed.data.dir <- "/share/scratch/arj32/parsed-data/"
+raw.data.dir    <- "/share/scratch/arj32/raw_data/"
+parsed.data.dir <- "/share/scratch/arj32/parsed_data/"
 
 # Open connection to database --------------------------------------------------
 db <- dbConnect(SQLite(), dbname=paste(parsed.data.dir, cancer.type, "/",
@@ -24,7 +24,7 @@ for (i in 1:length(data.types)){
       cat("..", j, "\n", sep="")
       cat("....reading\n")
       load(paste(parsed.data.dir, cancer.type, "/", data.dirs[i], "/",
-                 cancer.type, "-", data.types[i], "-", j, ".Rdata", sep=""))
+                 cancer.type, "_", data.types[i], "_", j, ".Rdata", sep=""))
       cat("....writing\n")
       dbWriteTable(conn  = db,
                    name  = paste(data.types[i], "_", j, sep=""),

@@ -2,8 +2,8 @@ library(data.table)
 
 # Define cancer type, raw and parsed data directories --------------------------
 cancer.type <- "brca"
-raw.data.dir    <- "/share/scratch/arj32/raw-data/"
-parsed.data.dir <- "/share/scratch/arj32/parsed-data/"
+raw.data.dir    <- "/share/scratch/arj32/raw_data/"
+parsed.data.dir <- "/share/scratch/arj32/parsed_data/"
 source.file.path<- "/mirn/miRNASeq/BCGSC__IlluminaHiSeq_miRNASeq/Level_3/"
 source.file.dir <- paste(raw.data.dir, cancer.type, source.file.path, sep="")
 output.dir      <- paste(parsed.data.dir, cancer.type, "/mirn/",  sep="")
@@ -16,7 +16,7 @@ setnames(file.sample.map, c("filename", "barcode"))
 file.sample.map <- file.sample.map[grep("mirna.quantification", filename)]
 
 sample.list <- fread(paste(parsed.data.dir, cancer.type,
-                               "/info/mirn-participants.txt", sep=""))
+                               "/info/mirn_participants.txt", sep=""))
 
 sample.list[normal.barcode == ""]$normal.barcode <- NA
 
@@ -61,6 +61,6 @@ for(i in 1:n){
 assign(paste(cancer.type, ".mirn.cancer", sep=""), cancer.wide)
 assign(paste(cancer.type, ".mirn.normal", sep=""), normal.wide)
 save(list = paste(cancer.type, ".mirn.cancer", sep=""),
-     file = paste(output.dir, cancer.type, "-mirn-cancer.Rdata", sep=""))
+     file = paste(output.dir, cancer.type, "_mirn_cancer.Rdata", sep=""))
 save(list = paste(cancer.type, ".mirn.normal", sep=""),
-     file = paste(output.dir, cancer.type, "-mirn-normal.Rdata", sep=""))
+     file = paste(output.dir, cancer.type, "_mirn_normal.Rdata", sep=""))

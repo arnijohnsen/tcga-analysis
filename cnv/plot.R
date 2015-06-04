@@ -2,7 +2,7 @@ library(copynumber)
 library(data.table)
 
 cat("..loading data\n")
-load("../parsed-data/OV/cnv/ov-cnv-cancer.Rata")
+load("../parsed_data/OV/cnv/ov_cnv_cancer.Rata")
 
 cat("..binding list\n")
 cnv.long <- rbindlist(ov.cnv.cancer[1:20])

@@ -1,8 +1,8 @@
 library(data.table)
 
 cancer.type <- "brca"
-raw.data.dir    <- "/share/scratch/arj32/raw-data/"
-parsed.data.dir <- "/share/scratch/arj32/parsed-data/"
+raw.data.dir    <- "/share/scratch/arj32/raw_data/"
+parsed.data.dir <- "/share/scratch/arj32/parsed_data/"
 
 file.sample.map <- fread(paste(raw.data.dir, cancer.type, "/expr/FILE_SAMPLE_MAP.txt", sep=""))
 
@@ -44,5 +44,5 @@ normal.barcode <- sapply(database.info$participant, function(x){tmp <- grep(past
                                                              })
 database.info$normal.barcode <- unlist(normal.barcode)
 
-write.table(database.info, paste(parsed.data.dir, cancer.type, "/info/expr-participants.txt", sep=""), quote=F, row.names=F)
+write.table(database.info, paste(parsed.data.dir, cancer.type, "/info/expr_participants.txt", sep=""), quote=F, row.names=F)
 

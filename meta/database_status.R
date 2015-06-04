@@ -1,7 +1,7 @@
 library(RSQLite)
 
-raw.data.dir    <- "/share/scratch/arj32/raw-data/"
-parsed.data.dir <- "/share/scratch/arj32/parsed-data/"
+raw.data.dir    <- "/share/scratch/arj32/raw_data/"
+parsed.data.dir <- "/share/scratch/arj32/parsed_data/"
 
 cancer.types <- c("brca", "ov", "paad", "prad")
 data.types   <- c("clin", "cnv", "expr", "meth", "muta", "mirn")
@@ -17,7 +17,7 @@ for (c.type in cancer.types) {
   names(sql)   <- data.types
 
   for (d.type in data.types) {
-    # Check files in raw-data --------------------------------------------------
+    # Check files in raw_data --------------------------------------------------
     if (d.type == "clin"){
       check.file <- paste(raw.data.dir, c.type,
                           "/clin/nationwidechildrens.org_clinical_patient_",
@@ -33,17 +33,17 @@ for (c.type in cancer.types) {
       }
     }
 
-    # Check Rdata files in parsed-data -----------------------------------------
+    # Check Rdata files in parsed_data -----------------------------------------
     if (d.type == "cnv") {
       check.file.c <- paste(parsed.data.dir, c.type, "/", d.type, "/", c.type,
-                            "-", "cnvw-cancer.Rdata", sep="")
+                            "_", "cnvw_cancer.Rdata", sep="")
       check.file.n <- paste(parsed.data.dir, c.type, "/", d.type, "/", c.type,
-                            "-", "cnvw-normal.Rdata", sep="")
+                            "_", "cnvw_normal.Rdata", sep="")
     } else {
       check.file.c <- paste(parsed.data.dir, c.type, "/", d.type, "/", c.type,
-                            "-", d.type, "-cancer.Rdata", sep="")
+                            "_", d.type, "_cancer.Rdata", sep="")
       check.file.n <- paste(parsed.data.dir, c.type, "/", d.type, "/", c.type,
-                            "-", d.type, "-normal.Rdata", sep="")
+                            "_", d.type, "_normal.Rdata", sep="")
     }
     if (file.exists(check.file.c) && file.exists(check.file.n)) {
       Rdata[d.type] <- "b"
@@ -53,7 +53,7 @@ for (c.type in cancer.types) {
       Rdata[d.type] <- "n"
     }
 
-    # Check SQLite database in parsed-data -------------------------------------
+    # Check SQLite database in parsed_data -------------------------------------
     sql.file <- paste(parsed.data.dir, c.type, "/", c.type, ".sqlite", sep="")
     if (file.exists(sql.file)){
       db <- dbConnect(SQLite(), dbname=sql.file)

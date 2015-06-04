@@ -2,8 +2,8 @@ library(data.table)
 
 # Define cancer type, raw and parsed data directories --------------------------
 cancer.type <- "brca"
-raw.data.dir    <- "/share/scratch/arj32/raw-data/"
-parsed.data.dir <- "/share/scratch/arj32/parsed-data/"
+raw.data.dir    <- "/share/scratch/arj32/raw_data/"
+parsed.data.dir <- "/share/scratch/arj32/parsed_data/"
 source.file.path<- "/expr/RNASeqV2/UNC__IlluminaHiSeq_RNASeqV2/Level_3/"
 source.file.dir <- paste(raw.data.dir, cancer.type, source.file.path, sep="")
 output.dir      <- paste(parsed.data.dir, cancer.type, "/expr/",  sep="")
@@ -16,7 +16,7 @@ setnames(file.sample.map, c("filename", "barcode"))
 file.sample.map <- file.sample.map[grep("genes.normalized_results", filename)]
 
 sample.list <- fread(paste(parsed.data.dir, cancer.type,
-                               "/info/expr-participants.txt", sep=""))
+                               "/info/expr_participants.txt", sep=""))
 
 n <- dim(sample.list)[1]
 
@@ -62,6 +62,6 @@ for(i in 1:n){
 assign(paste(cancer.type, ".expr.cancer", sep=""), cancer.wide)
 assign(paste(cancer.type, ".expr.normal", sep=""), normal.wide)
 save(list = paste(cancer.type, ".expr.cancer", sep=""),
-     file = paste(output.dir, cancer.type, "-expr-cancer.Rdata", sep=""))
+     file = paste(output.dir, cancer.type, "_expr_cancer.Rdata", sep=""))
 save(list = paste(cancer.type, ".expr.normal", sep=""),
-     file = paste(output.dir, cancer.type, "-expr-normal.Rdata", sep=""))
+     file = paste(output.dir, cancer.type, "_expr_normal.Rdata", sep=""))

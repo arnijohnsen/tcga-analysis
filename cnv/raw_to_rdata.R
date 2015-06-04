@@ -2,21 +2,21 @@ library(data.table)
 
 # Define cancer type, raw and parsed data directories --------------------------
 cancer.type <- "brca"
-raw.data.dir    <- "/share/scratch/arj32/raw-data/"
-parsed.data.dir <- "/share/scratch/arj32/parsed-data/"
+raw.data.dir    <- "/share/scratch/arj32/raw_data/"
+parsed.data.dir <- "/share/scratch/arj32/parsed_data/"
 source.file.path<- "/cnv/CNV_SNP_Array/BI__Genome_Wide_SNP_6/Level_3/"
 source.file.dir <- paste(raw.data.dir, cancer.type, source.file.path, sep="")
 output.dir      <- paste(parsed.data.dir, cancer.type, "/cnv/",  sep="")
 
 # Load file and sample information ---------------------------------------------
-file.sample.map <- fread(paste(raw.data.dir, cancer.type, 
+file.sample.map <- fread(paste(raw.data.dir, cancer.type,
                                "/cnv/FILE_SAMPLE_MAP.txt", sep=""))
 setnames(file.sample.map, c("filename", "barcode"))
 # Use only nocsv_hg19
 file.sample.map <- file.sample.map[grep("nocnv_hg19", filename)]
 
-sample.list <- fread(paste(parsed.data.dir, cancer.type, 
-                           "/info/cnv-participants.txt", sep=""))
+sample.list <- fread(paste(parsed.data.dir, cancer.type,
+                           "/info/cnv_participants.txt", sep=""))
 
 n <- dim(sample.list)[1]
 
@@ -47,6 +47,6 @@ for(i in 1:n){
 assign(paste(cancer.type, ".cnvl.cancer", sep=""), cancer.list)
 assign(paste(cancer.type, ".cnvl.normal", sep=""), normal.list)
 save(list = paste(cancer.type, ".cnvl.cancer", sep=""),
-     file = paste(output.dir, cancer.type, "-cnvl-cancer.Rdata", sep=""))
+     file = paste(output.dir, cancer.type, "_cnvl_cancer.Rdata", sep=""))
 save(list = paste(cancer.type, ".cnvl.normal", sep=""),
-     file = paste(output.dir, cancer.type, "-cnvl-normal.Rdata", sep=""))
+     file = paste(output.dir, cancer.type, "_cnvl_normal.Rdata", sep=""))

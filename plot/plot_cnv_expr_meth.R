@@ -1,17 +1,17 @@
 library(data.table)
 
 if(!exists("brca.cnvw.cancer")){
-  load("../parsed-data/brca/cnv/brca-cnvw-cancer.Rdata")
+  load("../parsed_data/brca/cnv/brca_cnvw_cancer.Rdata")
 }
 if(!exists("brca.expr.cancer")){
-  load("../parsed-data/brca/expr/brca-expr-cancer.Rdata")
+  load("../parsed_data/brca/expr/brca_expr_cancer.Rdata")
 }
 if(!exists("brca.meth.cancer")){
-  load("../parsed-data/brca/meth/brca-meth-cancer.Rdata")
+  load("../parsed_data/brca/meth/brca_meth_cancer.Rdata")
 }
 
 # TODO: Replace with fread from text file
-load("../Rdata/BRCA/info/BRCA-linked-probes-genes.Rdata")
+load("../Rdata/BRCA/info/BRCA_linked_probes_genes.Rdata")
 
 str <- "^ERBB2$"
 

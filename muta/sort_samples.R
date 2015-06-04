@@ -2,8 +2,8 @@ library(data.table)
 
 # Define cancer type, raw and parsed data directories --------------------------
 cancer.type <- "brca"
-raw.data.dir    <- "/share/scratch/arj32/raw-data/"
-parsed.data.dir <- "/share/scratch/arj32/parsed-data/"
+raw.data.dir    <- "/share/scratch/arj32/raw_data/"
+parsed.data.dir <- "/share/scratch/arj32/parsed_data/"
 source.file.path<- "/muta/Somatic_Mutations/WUSM__IlluminaGA_DNASeq_curated/Level_2/"
 source.file.dir <- paste(raw.data.dir, cancer.type, source.file.path, sep="")
 output.dir      <- paste(parsed.data.dir, cancer.type, "/muta/",  sep="")
@@ -26,5 +26,5 @@ database.info.unq <- unique(database.info)
 
 # Assign systematic names to data frames and save ------------------------------
 write.table(database.info.unq, paste(parsed.data.dir, cancer.type,
-                                     "/info/muta-participants.txt", sep=""),
+                                     "/info/muta_participants.txt", sep=""),
             quote=F, row.names=F)

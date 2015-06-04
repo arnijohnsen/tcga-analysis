@@ -3,20 +3,20 @@ library(limma)
 
 # Define cancer type, raw and parsed data directories --------------------------
 cancer.type <- "brca"
-raw.data.dir    <- "/share/scratch/arj32/raw-data/"
-parsed.data.dir <- "/share/scratch/arj32/parsed-data/"
+raw.data.dir    <- "/share/scratch/arj32/raw_data/"
+parsed.data.dir <- "/share/scratch/arj32/parsed_data/"
 
 # Read pariticipant list for cnv, expr and meth. TODO: add muta ----------------
 cnv <- fread(paste(parsed.data.dir, cancer.type,
-                           "/info/cnv-participants.txt", sep=""))
+                           "/info/cnv_participants.txt", sep=""))
 expr <- fread(paste(parsed.data.dir, cancer.type,
-                           "/info/expr-participants.txt", sep=""))
+                           "/info/expr_participants.txt", sep=""))
 meth <- fread(paste(parsed.data.dir, cancer.type,
-                           "/info/meth-participants.txt", sep=""))
+                           "/info/meth_participants.txt", sep=""))
 muta <- fread(paste(parsed.data.dir, cancer.type,
-                           "/info/muta-participants.txt", sep=""))
+                           "/info/muta_participants.txt", sep=""))
 mirn <- fread(paste(parsed.data.dir, cancer.type,
-                           "/info/mirn-participants.txt", sep=""))
+                           "/info/mirn_participants.txt", sep=""))
 
 cnv.c  <-  cnv[!is.na(cancer.barcode)]
 expr.c <- expr[!is.na(cancer.barcode)]
@@ -81,7 +81,7 @@ for (i in 1:n){
   overlap$b.sum[i] <- sum(overlap$b[idx])
 }
 
-#sink(file=paste(parsed.data.dir, cancer.type, 
-#                "/info/participant-overlap.txt", sep=""))
+#sink(file=paste(parsed.data.dir, cancer.type,
+#                "/info/participant_overlap.txt", sep=""))
 #print(overlap)
 #sink()

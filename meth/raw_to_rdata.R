@@ -2,8 +2,8 @@ library(data.table)
 
 # Define cancer type, raw and parsed data directories --------------------------
 cancer.type <- "brca"
-raw.data.dir    <- "/share/scratch/arj32/raw-data/"
-parsed.data.dir <- "/share/scratch/arj32/parsed-data/"
+raw.data.dir    <- "/share/scratch/arj32/raw_data/"
+parsed.data.dir <- "/share/scratch/arj32/parsed_data/"
 source.file.path<- "/meth/DNA_Methylation/JHU_USC__HumanMethylation450/Level_3/"
 source.file.dir <- paste(raw.data.dir, cancer.type, source.file.path, sep="")
 output.dir      <- paste(parsed.data.dir, cancer.type, "/meth/",  sep="")
@@ -13,7 +13,7 @@ file.sample.map <- fread(paste(raw.data.dir, cancer.type,
                                "/meth/FILE_SAMPLE_MAP.txt", sep=""))
 setnames(file.sample.map, c("filename", "barcode"))
 sample.list <- fread(paste(parsed.data.dir, cancer.type,
-                               "/info/meth-participants.txt", sep=""))
+                               "/info/meth_participants.txt", sep=""))
 
 n <- dim(sample.list)[1]
 
@@ -56,6 +56,6 @@ for(i in 1:n){
 assign(paste(cancer.type, ".meth.cancer", sep=""), cancer.wide)
 assign(paste(cancer.type, ".meth.normal", sep=""), normal.wide)
 save(list = paste(cancer.type, ".meth.cancer", sep=""),
-     file = paste(output.dir, cancer.type, "-meth-cancer.Rdata", sep=""))
+     file = paste(output.dir, cancer.type, "_meth_cancer.Rdata", sep=""))
 save(list = paste(cancer.type, ".meth.normal", sep=""),
-     file = paste(output.dir, cancer.type, "-meth-normal.Rdata", sep=""))
+     file = paste(output.dir, cancer.type, "_meth_normal.Rdata", sep=""))

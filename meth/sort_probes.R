@@ -1,12 +1,12 @@
 library(data.table)
 
 cancer.type <- "brca"
-raw.data.dir <- "/share/scratch/arj32/raw-data/"
-parsed.data.dir <- "/share/scratch/arj32/parsed-data/"
+raw.data.dir <- "/share/scratch/arj32/raw_data/"
+parsed.data.dir <- "/share/scratch/arj32/parsed_data/"
 
 cat("Reading probes annotation file..\n")
-probe.ann <- fread(paste(raw.data.dir, 
-                         "annotation-files/GenomeStudioProbeAnnotations.txt",
+probe.ann <- fread(paste(raw.data.dir,
+                         "annotation_files/GenomeStudioProbeAnnotations.txt",
                          sep=""),
                     select=c(2,14, 16,19))
 setnames(probe.ann, c("probe", "group", "cpg.island", "is.enhancer"))
@@ -33,6 +33,6 @@ cat("Writing to file..\n")
 write.table(probe.ann[,c(1,10),with=F],
             paste(parsed.data.dir,
                   cancer.type,
-                  "/info/meth-probe-status.txt",
+                  "/info/meth_probe_status.txt",
                   sep=""),
             quote=F, row.names=F)
