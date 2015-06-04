@@ -11,11 +11,11 @@ if(!exists("brca_meth_cancer")){
 }
 
 # TODO: Replace with fread from text file
-load("../Rdata/BRCA/info/BRCA_linked_probes_genes.Rdata")
+load("../Rdata/BRCA/info/BRCA-linked-probes-genes.Rdata")
 
 str <- "^ERBB2$"
 
-probes <- (BRCA.linked_probes_genes[grep(str,BRCA.linked_probes_genes$genes),1])
+probes <- (BRCA.linked.probes.genes[grep(str,BRCA.linked.probes.genes$genes),1])
 
 my_probe <- probes[1]
 

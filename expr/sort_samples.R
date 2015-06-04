@@ -43,5 +43,5 @@ normal_barcode <- sapply(database_info$participant, function(x){tmp <- grep(past
                                                              })
 database_info$normal_barcode <- unlist(normal_barcode)
 
-write_table(database_info, paste(parsed_data_dir, cancer_type, "/info/expr_participants.txt", sep=""), quote=F, row.names=F)
+write.table(database_info, paste(parsed_data_dir, cancer_type, "/info/expr_participants.txt", sep=""), quote=F, row.names=F)
 

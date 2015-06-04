@@ -16,7 +16,7 @@ setnames(geneInfo, c("chrom", "genename", "start", "end"))
 setcolorder(geneInfo, c("chrom", "start", "end", "genename"))
 setkey(geneInfo, chrom, start, end)
 
-write_table(geneInfo,
+write.table(geneInfo,
             paste(parsed_data_dir, cancer_type,
-                  "/info/hg19geneinfo_txt", sep=""),
+                  "/info/hg19geneinfo.txt", sep=""),
             quote=F, row.names=F)

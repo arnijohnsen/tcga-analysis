@@ -4,13 +4,13 @@ cancer_type <- "brca"
 raw_data_dir    <- "/share/scratch/arj32/raw_data/"
 parsed_data_dir <- "/share/scratch/arj32/parsed_data/"
 
-file_sample_map <- fread(paste(raw_data_dir, cancer.type, "/meth/FILE_SAMPLE_MAP.txt", sep=""))
+file_sample_map <- fread(paste(raw_data_dir, cancer_type, "/meth/FILE_SAMPLE_MAP.txt", sep=""))
 
 # dont use recurrent cancers or files with multiple barcodes
 bad_barcodes <- grepl(",", file_sample_map$barcode)
 file_sample_map <- file_sample_map[!bad_barcodes]
 
-database_info <- data_table(participant = unique(substr(file_sample_map$barcode, 1, 12)))
+database_info <- data.table(participant = unique(substr(file_sample_map$barcode, 1, 12)))
 
 # Find cancer barcode
 cancer_barcode <- sapply(database_info$participant, function(x){tmp <- grep(paste(x,"-01",sep=""), file_sample_map$barcode)

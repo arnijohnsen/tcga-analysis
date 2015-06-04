@@ -31,12 +31,12 @@ for(i in 1:n){
   normal_barcode <- sample_list$normal_barcode[i]
   cancer_file <- file_sample_map[barcode==cancer_barcode, filename]
   normal_file <- file_sample_map[barcode==normal_barcode, filename]
-  if(!is_na(cancer_barcode)){
+  if(!is.na(cancer_barcode)){
     tmp <- fread(paste(source_file_dir, cancer_file, sep=""))
     tmp$Sample <- cancer_barcode
     cancer_list[[ cancer_barcode ]] <- tmp
   }
-  if(!is_na(normal_barcode)){
+  if(!is.na(normal_barcode)){
     tmp <- fread(paste(source_file_dir, normal_file, sep=""))
     tmp$Sample <- normal_barcode
     normal_list[[ normal_barcode]] <- tmp

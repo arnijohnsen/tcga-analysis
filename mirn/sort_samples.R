@@ -14,7 +14,7 @@ bad_barcodes <- grepl(",", file_sample_map$barcode) | (substr(file_sample_map$ba
 #bad_barcodes <- grepl(",", file_sample_map$barcode)
 file_sample_map <- file_sample_map[!bad_barcodes]
 
-database_info <- data_table(participant = unique(substr(file_sample_map$barcode, 1, 12)))
+database_info <- data.table(participant = unique(substr(file_sample_map$barcode, 1, 12)))
 
 # Find cancer barcode
 cancer_barcode <- sapply(database_info$participant, function(x){tmp <- grep(paste(x,"-01",sep=""), file_sample_map$barcode)

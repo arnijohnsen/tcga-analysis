@@ -18,7 +18,7 @@ probe_ann[,is_island:= grepl("Island", cpg_island)]
 probe_ann[,is_shore := grepl("Shore",  cpg_island)]
 probe_ann[,is_none  :=(!is_island & !is_shore)]
 probe_ann[,is_promoter:=grepl("TSS200|5'UTR", group)]
-probe_ann[is_na(is_enhancer)]$is_enhancer <- FALSE
+probe_ann[is.na(is_enhancer)]$is_enhancer <- FALSE
 
 # Creating status column, with default case (undefined) and then adding other --
 # status types in increasing order of importance (most important is laste) -----
@@ -30,7 +30,7 @@ probe_ann[(is_enhancer)      ]$status <- "enhancer"
 probe_ann[(is_promoter)      ]$status <- "promoter"
 
 cat("Writing to file..\n")
-write_table(probe_ann[,c(1,10),with=F],
+write.table(probe_ann[,c(1,10),with=F],
             paste(parsed_data_dir,
                   cancer_type,
                   "/info/meth_probe_status.txt",

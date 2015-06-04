@@ -10,12 +10,12 @@ output_dir      <- paste(parsed_data_dir, cancer_type, "/cnv/",  sep="")
 # Load hg19 (build 37)
 geneInfo <- fread(paste(parsed_data_dir, cancer_type, "/info/hg19geneinfo.txt", sep=""))
 
-load(paste(output_dir, cancer_type, "_cnv_cancer.Rdata", sep=""))
-load(paste(output_dir, cancer_type, "_cnv_normal.Rdata", sep=""))
+load(paste(output_dir, cancer_type, "_cnvl_cancer.Rdata", sep=""))
+load(paste(output_dir, cancer_type, "_cnvl_normal.Rdata", sep=""))
 
 cat("Binding list..\n")
-cnv_long_cancer <- rbindlist(brca_cnv_cancer)
-cnv_long_normal <- rbindlist(brca_cnv_normal)
+cnv_long_cancer <- rbindlist(brca_cnvl_cancer)
+cnv_long_normal <- rbindlist(brca_cnvl_normal)
 
 setnames(cnv_long_cancer, c("ID", "chrom", "loc.start", "loc.end", "n.probes", "seg.mean"))
 setnames(cnv_long_normal, c("ID", "chrom", "loc.start", "loc.end", "n.probes", "seg.mean"))
@@ -29,12 +29,12 @@ rd_seg_cancer <- getRS(cn_seg_cancer, by="gene", imput=F, XY=T, what="mean", gen
 rd_seg_normal <- getRS(cn_seg_normal, by="gene", imput=F, XY=T, what="mean", geneMap=geneInfo)
 
 cat("rs(RDSeg)..\n")
-cnv_wide_cancer <-data_table(rs(rd_seg_cancer))
-cnv_wide_normal <-data_table(rs(rd_seg_normal))
+cnv_wide_cancer <-data.table(rs(rd_seg_cancer))
+cnv_wide_normal <-data.table(rs(rd_seg_normal))
 
-assign(paste(cancer_type, ".cnvw_cancer", sep=""), cnv_wide_cancer)
-assign(paste(cancer_type, ".cnvw_normal", sep=""), cnv_wide_normal)
-save(list = paste(cancer_type, ".cnvw_cancer", sep=""),
+assign(paste(cancer_type, "_cnvw_cancer", sep=""), cnv_wide_cancer)
+assign(paste(cancer_type, "_cnvw_normal", sep=""), cnv_wide_normal)
+save(list = paste(cancer_type, "_cnvw_cancer", sep=""),
      file = paste(output_dir, cancer_type, "_cnvw_cancer.Rdata", sep=""))
-save(list = paste(cancer_type, ".cnvw_normal", sep=""),
+save(list = paste(cancer_type, "_cnvw_normal", sep=""),
      file = paste(output_dir, cancer_type, "_cnvw_normal.Rdata", sep=""))

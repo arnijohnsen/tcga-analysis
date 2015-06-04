@@ -13,7 +13,7 @@ file_sample_map <- fread(paste(raw_data_dir, cancer_type,
                                "/expr/FILE_SAMPLE_MAP.txt", sep=""))
 setnames(file_sample_map, c("filename", "barcode"))
 # use only genes_normalized_results
-file_sample_map <- file_sample_map[grep("genes_normalized_results", filename)]
+file_sample_map <- file_sample_map[grep("genes.normalized_results", filename)]
 
 sample_list <- fread(paste(parsed_data_dir, cancer_type,
                                "/info/expr_participants.txt", sep=""))
@@ -22,8 +22,8 @@ n <- dim(sample_list)[1]
 
 # Read one file with all information, use to create data.tables ----------------
 cat("Initiating tables..\n")
-idx_cancer <- which(!is_na(sample_list$cancer_barcode))[1]
-idx_normal <- which(!is_na(sample_list$normal_barcode))[1]
+idx_cancer <- which(!is.na(sample_list$cancer_barcode))[1]
+idx_normal <- which(!is.na(sample_list$normal_barcode))[1]
 cancer_barcode <- sample_list$cancer_barcode[idx_cancer]
 normal_barcode <- sample_list$normal_barcode[idx_normal]
 cancer_file <- file_sample_map[barcode==cancer_barcode, filename]
@@ -48,7 +48,7 @@ for(i in 1:n){
   normal_barcode <- sample_list$normal_barcode[i]
   cancer_file <- file_sample_map[barcode==cancer_barcode, filename]
   normal_file <- file_sample_map[barcode==normal_barcode, filename]
-  if(!is_na(cancer_barcode)){
+  if(!is.na(cancer_barcode)){
     tmp <- fread(paste(source_file_dir, cancer_file, sep=""), select=2)
     cancer_wide[,c(cancer_barcode):=tmp]
   }

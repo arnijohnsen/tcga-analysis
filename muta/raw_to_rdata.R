@@ -15,11 +15,11 @@ setnames(file_sample_map, c("filename", "barcode"))
 
 # Read only file ---------------------------------------------------------------
 mutation <- fread(paste(source_file_dir, file_sample_map[1,filename], sep=""),
-                  select=c(1,2,5,6,7,9,16,17))
-setnames(mutation, c("gene", "entrez_id", "chrom", "start", "end",
+                  select=c(1,5,6,7,9,16,17))
+setnames(mutation, c("gene", "chrom", "start", "end",
                      "type", "cancer_barcode", "normal_barcode"))
 
 # Assign systematic names to data frames and save ------------------------------
-assign(paste(cancer_type, ".muta_cancer", sep=""), mutation)
-save(list = paste(cancer_type, ".muta_cancer", sep=""),
+assign(paste(cancer_type, "_muta_cancer", sep=""), mutation)
+save(list = paste(cancer_type, "_muta_cancer", sep=""),
      file = paste(output_dir, cancer_type, "_muta_cancer.Rdata", sep=""))

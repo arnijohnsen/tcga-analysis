@@ -16,7 +16,7 @@ setnames(file_sample_map, c("filename", "barcode"))
 file_sample_map <- file_sample_map[grep("mirna.quantification", filename)]
 
 sample_list <- fread(paste(parsed_data_dir, cancer_type,
-                               "/info/mirn_participants_txt", sep=""))
+                               "/info/mirn_participants.txt", sep=""))
 
 sample_list[normal_barcode == ""]$normal_barcode <- NA
 
@@ -24,8 +24,8 @@ n <- dim(sample_list)[1]
 
 # Read one file with all information, use to create data.tables ----------------
 cat("Initiating tables..\n")
-idx_cancer <- which(!is_na(sample_list$cancer_barcode))[1]
-idx_normal <- which(!is_na(sample_list$normal_barcode))[1]
+idx_cancer <- which(!is.na(sample_list$cancer_barcode))[1]
+idx_normal <- which(!is.na(sample_list$normal_barcode))[1]
 cancer_barcode <- sample_list$cancer_barcode[idx_cancer]
 normal_barcode <- sample_list$normal_barcode[idx_normal]
 cancer_file <- file_sample_map[barcode==cancer_barcode, filename]
