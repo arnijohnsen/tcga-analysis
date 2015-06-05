@@ -4,7 +4,7 @@ cancer_type <- "brca"
 raw_data_dir    <- "/share/scratch/arj32/raw_data/"
 parsed_data_dir <- "/share/scratch/arj32/parsed_data/"
 
-raw <- fread(paste(raw_data_dir, "annotation_files/RefSeqHg19.txt", sep=""),
+raw <- fread(paste(raw_data_dir, "annotation/RefSeqHg19.txt", sep=""),
              select=c(3,5,6,13))
 
 filter <- raw[,.(start=min(txStart), end=max(txEnd)),by=.(chrom,name2)]
@@ -18,5 +18,5 @@ setkey(geneInfo, chrom, start, end)
 
 write.table(geneInfo,
             paste(parsed_data_dir, cancer_type,
-                  "/info/hg19geneinfo.txt", sep=""),
+                  "/annotation/hg19geneinfo.txt", sep=""),
             quote=F, row.names=F)

@@ -6,7 +6,7 @@ parsed_data_dir <- "/share/scratch/arj32/parsed_data/"
 
 cat("Reading probes annotation file..\n")
 probe_ann <- fread(paste(raw_data_dir,
-                         "annotation_files/GenomeStudioProbeAnnotations.txt",
+                         "annotation/GenomeStudioProbeAnnotations.txt",
                          sep=""),
                     select=c(2,14, 16, 19))
 setnames(probe_ann, c("probe", "group", "cpg_island", "is_enhancer"))
@@ -33,6 +33,6 @@ cat("Writing to file..\n")
 write.table(probe_ann[,c(1,10),with=F],
             paste(parsed_data_dir,
                   cancer_type,
-                  "/info/meth_probe_status.txt",
+                  "/annotation/meth_probe_status.txt",
                   sep=""),
             quote=F, row.names=F)
