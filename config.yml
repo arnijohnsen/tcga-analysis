@@ -1,0 +1,5 @@
+data_dirs:
+ raw_data    : /share/scratch/arj32/raw_data/
+ parsed_data : /share/scratch/arj32/parsed_data/
+
+cancer_type: brca

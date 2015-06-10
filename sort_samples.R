@@ -1,8 +1,11 @@
 library(data.table)
+library(yaml)
 
-cancer_type     <- "brca"
-raw_data_dir    <- "/share/scratch/arj32/raw_data/"
-parsed_data_dir <- "/share/scratch/arj32/parsed_data/"
+config <- yaml.load_file("/share/scratch/arj32/tcga-analysis/config.yml")
+
+raw_data_dir    <- config$data_dirs$raw_data
+parsed_data_dir <- config$data_dirs$parsed_data
+cancer_type     <- config$cancer_type
 
 barcode_regex <- paste("^TCGA",         # TCGA Project
                        "[A-Z0-9]{2}",   # Tissue source site
