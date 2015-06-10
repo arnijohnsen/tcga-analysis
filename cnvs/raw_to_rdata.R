@@ -4,19 +4,19 @@ library(data.table)
 cancer_type <- "brca"
 raw_data_dir    <- "/share/scratch/arj32/raw_data/"
 parsed_data_dir <- "/share/scratch/arj32/parsed_data/"
-source_file_path<- "/cnv/CNV_SNP_Array/BI__Genome_Wide_SNP_6/Level_3/"
+source_file_path<- "/cnvs/CNV_SNP_Array/BI__Genome_Wide_SNP_6/Level_3/"
 source_file_dir <- paste(raw_data_dir, cancer_type, source_file_path, sep="")
-output_dir      <- paste(parsed_data_dir, cancer_type, "/cnv/",  sep="")
+output_dir      <- paste(parsed_data_dir, cancer_type, "/cnvs/",  sep="")
 
 # Load file and sample information ---------------------------------------------
 file_sample_map <- fread(paste(raw_data_dir, cancer_type,
-                               "/cnv/FILE_SAMPLE_MAP.txt", sep=""))
+                               "/cnvs/FILE_SAMPLE_MAP.txt", sep=""))
 setnames(file_sample_map, c("filename", "barcode"))
 # Use only nocsv_hg19
 file_sample_map <- file_sample_map[grep("nocnv_hg19", filename)]
 
 sample_list <- fread(paste(parsed_data_dir, cancer_type,
-                           "/info/cnv_participants.txt", sep=""))
+                           "/info/cnvs_participants.txt", sep=""))
 
 n <- dim(sample_list)[1]
 

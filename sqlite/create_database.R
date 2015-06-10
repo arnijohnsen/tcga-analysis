@@ -29,7 +29,7 @@ for (i in 1:length(data_types)){
       dbWriteTable(conn  = db,
                    name  = paste(data_types[i], "_", j, sep=""),
                    value = get(paste(cancer_type, data_types[i], j, sep=".")),
-                   row_names = F)
+                   row.names = F)
       rm(list=paste(cancer_type, data_types[i], j, sep="."))
       gc()
     }
