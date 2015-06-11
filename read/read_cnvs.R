@@ -8,7 +8,7 @@ library(CNTools) # Convert from long to wide
 verbose <- Verbose(threshold = -1)
 
 # Read base directories from config.yml, define cancer and data type -----------
-header(verbose, "Reading copy number variation data", padding = 0)
+ruler(verbose)
 enter(verbose, "Preparation")
 cat(verbose, "Reading config.yml")
 config <- yaml.load_file("/share/scratch/arj32/tcga-analysis/config.yml")
@@ -19,7 +19,7 @@ data_type       <- "cnvs"
 
 # Define absolute directories --------------------------------------------------
 cat(verbose, "Defining directories to read from")
-file_filter     <- "nocnv_hg19"
+file_filter  <- "nocnv_hg19"
 src_file_path <- "/CNV_SNP_Array/BI__Genome_Wide_SNP_6/Level_3/"
 src_file_dir <- paste(
   raw_data_dir, cancer_type, "/", data_type, src_file_path, sep = ""
@@ -93,7 +93,7 @@ cnvs_rs  <- getRS(
 cnvs_cancer <-data.table(rs(cnvs_rs))
 exit(verbose)
 
-# Save to .RDS file
+# Save to .RDS file ------------------------------------------------------------
 enter(verbose, "Saving files")
 cat(
   verbose, "List format to ",
