@@ -7,6 +7,8 @@ raw_data_dir    <- config$data_dirs$raw_data
 parsed_data_dir <- config$data_dirs$parsed_data
 cancer_type     <- config$cancer_type
 
+output_dir   <- paste(parsed_data_dir, cancer_type, "/info/",  sep="")
+
 barcode_regex <- paste("^TCGA",         # TCGA Project
                        "[A-Z0-9]{2}",   # Tissue source site
                        "[A-Z0-9]{4}",   # Participant
@@ -76,3 +78,6 @@ select_barcode <- function(x){
 casted_barcodes <- dcast.data.table(barcodes_bound, participant ~ type,
                                     value.var = "barcode",
                                     fun.aggregate = select_barcode)
+write.table(casted_barcodes, 
+            file= paste(output_dir, "participants.txt", sep = ""),
+            quote = F, row.names = F)
