@@ -94,7 +94,7 @@ cat(
 saveRDS(
   cancer_table,
   file = paste(
-    output_dir, cancer_type, "_", data_type, "_cancer.Rds", sep = ""
+    output_dir, cancer_type, "_", data_type, "_cancer_full.Rds", sep = ""
   )
 )
 cat(
@@ -104,7 +104,7 @@ cat(
 saveRDS(
   normal_table,
   file = paste(
-    output_dir, cancer_type, "_", data_type, "_normal.Rds", sep = ""
+    output_dir, cancer_type, "_", data_type, "_normal_full.Rds", sep = ""
   )
 )
 exit(verbose)
