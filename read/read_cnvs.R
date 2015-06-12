@@ -91,6 +91,7 @@ cnvs_rs  <- getRS(
   by = "gene", imput = F, XY = T, what = "mean", geneMap = gene_info
 )
 cnvs_cancer <-data.table(rs(cnvs_rs))
+setnames(cnvs_cancer, 4, "gene")
 exit(verbose)
 
 # Save to .RDS file ------------------------------------------------------------
