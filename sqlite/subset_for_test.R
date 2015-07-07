@@ -98,8 +98,9 @@ lpg <- fread(
 setkey(lpg, gene)
 setkey(meth_cancer, probe)
 setkey(meth_normal, probe)
-meth_cancer_min <- meth_cancer[lpg[nice_genes]$probe]
-meth_normal_min <- meth_normal[lpg[nice_genes]$probe]
+nice_probes <- intersect(lpg[nice_genes]$probe, meth_cancer$probe)
+meth_cancer_min <- meth_cancer[nice_probes]
+meth_normal_min <- meth_normal[nice_probes]
 cat(verbose, "Mutation is not subsetted")
 exit(verbose)
 
@@ -119,6 +120,13 @@ enter(verbose, "Sending writing queries for")
 cat(verbose, "Gene names")
 dbWriteTable(
   conn = db, name = "nice_genes", value = data.frame(nice_genes), row.names=F
+)
+cat(verbose, "Probe names")
+dbWriteTable(
+  conn = db, name = "nice_probes", value = data.frame(nice_probes), row.names=F
+)
+dbWriteTable(
+  conn = db, name = "linked_probes_genes", value = lpg[nice_genes], row.names=F
 )
 cat(verbose, "Clinical")
 dbWriteTable(
