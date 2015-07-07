@@ -1,4 +1,5 @@
 library(data.table)
+library(reshape2)
 library(yaml)    # Read config
 library(utils)   # Progress bar
 library(R.utils) # Verbose
@@ -61,6 +62,49 @@ clinical[,histological_type := histological_type %>%
   str_replace("\\[.*\\]", "Unknown")]
 exit(verbose)
 
+# Read information about tumor subtypes ----------------------------------------
+enter(verbose, "Reading subtypes files")
+subtype_pam50 <- fread(
+  paste(src_file_dir, "genomic_TCGA_BRCA_exp_HiSeqV2_clinical.tsv", sep = "")
+)
+setnames(
+  subtype_pam50,
+  c(
+    "sample_id", "pam50_rnaseq", "sample_type",
+    "pam50_array", "pam50_er", "pam50_pr", "pam50_her2"
+  )
+)
+subtype_pam50 <- subtype_pam50[sample_type == "Primary Tumor"]
+subtype_pam50[,bcr_patient_barcode:=substr(sample_id, 1, 12)]
+subtype_ic10 <- fread(
+  paste(src_file_dir, "TCGA_iC10.txt", sep = "")
+)
+subtype_ic10 <- subtype_ic10[substr(gsub(
+  ".*TCGA", "TCGA", samplename
+), 14, 15) == "01"]
+subtype_ic10[,bcr_patient_barcode:=substr(
+  gsub(".*TCGA", "TCGA", samplename), 1, 12
+)]
+exit(verbose)
+
+# Melt, add tumor subtypes and cast --------------------------------------------
+clinical_melt <- rbind(
+  melt(clinical, id.vars = "bcr_patient_barcode"),
+  melt(
+    subtype_pam50,
+    id.vars = "bcr_patient_barcode",
+    measure.vars = c(
+      "pam50_rnaseq", "pam50_array", "pam50_er", "pam50_pr", "pam50_her2"
+    )
+  ),
+  melt(subtype_ic10, id.vars = "bcr_patient_barcode", measure.vars = "iC10")
+)
+clinical_melt[value == ""]$value <- NA
+clinical_cast <- dcast.data.table(
+  clinical_melt,
+  bcr_patient_barcode ~ variable,
+  value.var = "value"
+)
 # Save to .RDS file ------------------------------------------------------------
 enter(verbose, "Saving files")
 cat(
@@ -68,7 +112,7 @@ cat(
   paste(output_dir, cancer_type, "_", data_type, "_cancer.Rds", sep = "")
 )
 saveRDS(
-  clinical,
+  clinical_cast,
   file = paste(
     output_dir, cancer_type, "_", data_type, "_cancer.Rds", sep = ""
   )
