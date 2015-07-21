@@ -9,19 +9,21 @@ raw_gene <- fread(
   select=c(3,5,6,13)
 )
 raw_mirn <- fread(
-  paste(raw_data_dir, "annotation/hsa.gff2.txt", sep=""),
-  select=c(1,4,5,9)
+  paste(raw_data_dir, "annotation/hsa.gff3.txt", sep=""),
+  select=c(1,3,4,5,9)
 )
-setnames(raw_mirn, c("chrom", "start", "end", "genename"))
+setnames(raw_mirn, c("chrom", "type", "txStart", "txEnd", "genename"))
 
-raw_mirn[,genename:=gsub('.*ID="hsa-', "", genename)]
+raw_mirn <- raw_mirn[type=="miRNA_primary_transcript"]
+raw_mirn[,type:=NULL]
+raw_mirn[,genename:=gsub('.*Name=hsa-', "", genename)]
 raw_mirn[,genename:=gsub('";', "", genename)]
-raw_mirn[,genename:=toupper(gsub("mir-", "mir", genename))]
+raw_mirn[,genename:=gsub("-", "", genename)]
+raw_mirn[,genename:=toupper( genename)]
 raw_mirn[,chrom:=gsub("^chr", "", chrom)]
 
 # Remove duplicate of MIR511
-raw_mirn <- raw_mirn[-174]
-
+filter_mirn <- raw_mirn[,.(start=min(txStart), end=max(txEnd)),by=.(chrom,genename)]
 filter_gene <- raw_gene[,.(start=min(txStart), end=max(txEnd)),by=.(chrom,name2)]
 filter_gene[,chrom:=gsub("^chr","",chrom)]
 
@@ -30,7 +32,7 @@ gene_info <- filter_gene[chrom %in% c(1:23,"X","Y")]
 setnames(gene_info, c("chrom", "genename", "start", "end"))
 setcolorder(gene_info, c("chrom", "start", "end", "genename"))
 
-gene_info <- rbind(gene_info, raw_mirn)
+gene_info <- rbind(gene_info, filter_mirn)
 setkey(gene_info, chrom, start, end)
 
 write.table(
