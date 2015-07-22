@@ -33,7 +33,9 @@ cat(verbose, "Reading from ", src_file_dir)
 
 clinical <- fread(
   paste(src_file_dir, filename, sep = ""), 
-  select = c(2, 7:8, 11:16, 21, 41, 44, 50, 56, 99)
+  select = switch(cancer_type,
+    brca = c(2, 7:8, 11:16, 21, 41, 44, 50, 56, 99)
+  )
 )[-(1:2),]
 cat(verbose, "Cleaning up data")
 clinical[,menopause_status := menopause_status %>%
@@ -63,42 +65,48 @@ clinical[,histological_type := histological_type %>%
 exit(verbose)
 
 # Read information about tumor subtypes ----------------------------------------
-enter(verbose, "Reading subtypes files")
-subtype_pam50 <- fread(
-  paste(src_file_dir, "genomic_TCGA_BRCA_exp_HiSeqV2_clinical.tsv", sep = "")
-)
-setnames(
-  subtype_pam50,
-  c(
-    "sample_id", "pam50_rnaseq", "sample_type",
-    "pam50_array", "pam50_er", "pam50_pr", "pam50_her2"
+if (cancer_type == "brca") {
+  enter(verbose, "Reading subtypes files")
+  subtype_pam50 <- fread(
+    paste(src_file_dir, "genomic_TCGA_BRCA_exp_HiSeqV2_clinical.tsv", sep = "")
   )
-)
-subtype_pam50 <- subtype_pam50[sample_type == "Primary Tumor"]
-subtype_pam50[,bcr_patient_barcode:=substr(sample_id, 1, 12)]
-subtype_ic10 <- fread(
-  paste(src_file_dir, "TCGA_iC10.txt", sep = "")
-)
-subtype_ic10 <- subtype_ic10[substr(gsub(
-  ".*TCGA", "TCGA", samplename
-), 14, 15) == "01"]
-subtype_ic10[,bcr_patient_barcode:=substr(
-  gsub(".*TCGA", "TCGA", samplename), 1, 12
-)]
-exit(verbose)
+  setnames(
+    subtype_pam50,
+    c(
+      "sample_id", "pam50_rnaseq", "sample_type",
+      "pam50_array", "pam50_er", "pam50_pr", "pam50_her2"
+    )
+  )
+  subtype_pam50 <- subtype_pam50[sample_type == "Primary Tumor"]
+  subtype_pam50[,bcr_patient_barcode:=substr(sample_id, 1, 12)]
+  subtype_ic10 <- fread(
+    paste(src_file_dir, "TCGA_iC10.txt", sep = "")
+  )
+  subtype_ic10 <- subtype_ic10[substr(gsub(
+    ".*TCGA", "TCGA", samplename
+  ), 14, 15) == "01"]
+  subtype_ic10[,bcr_patient_barcode:=substr(
+    gsub(".*TCGA", "TCGA", samplename), 1, 12
+  )]
+  exit(verbose)
+}
 
 # Melt, add tumor subtypes and cast --------------------------------------------
-clinical_melt <- rbind(
-  melt(clinical, id.vars = "bcr_patient_barcode"),
-  melt(
-    subtype_pam50,
-    id.vars = "bcr_patient_barcode",
-    measure.vars = c(
-      "pam50_rnaseq", "pam50_array", "pam50_er", "pam50_pr", "pam50_her2"
-    )
-  ),
-  melt(subtype_ic10, id.vars = "bcr_patient_barcode", measure.vars = "iC10")
-)
+if (cancer_type == "brca") {
+  clinical_melt <- rbind(
+    melt(clinical, id.vars = "bcr_patient_barcode"),
+    melt(
+      subtype_pam50,
+      id.vars = "bcr_patient_barcode",
+      measure.vars = c(
+        "pam50_rnaseq", "pam50_array", "pam50_er", "pam50_pr", "pam50_her2"
+      )
+    ),
+    melt(subtype_ic10, id.vars = "bcr_patient_barcode", measure.vars = "iC10")
+  )
+} else {
+  clinical_melt <- melt(clinical, id.vars = "bcr_patient_barcode")
+}
 clinical_melt[value == ""]$value <- NA
 clinical_cast <- dcast.data.table(
   clinical_melt,

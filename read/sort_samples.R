@@ -9,20 +9,24 @@ cancer_type     <- config$cancer_type
 
 output_dir   <- paste(parsed_data_dir, cancer_type, "/info/",  sep="")
 
-barcode_regex <- paste("^TCGA",         # TCGA Project
-                       "[A-Z0-9]{2}",   # Tissue source site
-                       "[A-Z0-9]{4}",   # Participant
-                       "[01]{2}[A-Z]",  # Sample and vial
-                       "[0-9]{2}[A-Z]", # Porion and analyte
-                       "[A-Z0-9]{4}",   # Plate
-                       "[A-Z0-9]{2}$",  # Center
-                       sep = "-")
+barcode_regex <- paste(
+  "^TCGA",         # TCGA Project
+   "[A-Z0-9]{2}",   # Tissue source site
+   "[A-Z0-9]{4}",   # Participant
+   "[01]{2}[A-Z]",  # Sample and vial
+   "[0-9]{2}[A-Z]", # Porion and analyte
+   "[A-Z0-9]{4}",   # Plate
+   "[A-Z0-9]{2}$",  # Center
+   sep = "-"
+ )
 data_types <- c("cnvs", "expr", "meth", "mirn", "muta")
-file_filter <- c("nocnv_hg19",                 # cnvs
-                 "genes\\.normalized_results", # expr
-                 ".*",                         # meth
-                 "mirna\\.quantification",     # mirn
-                 ".*")                         # muta
+file_filter <- c(
+  "nocnv_hg19",                  # cnvs
+   "genes\\.normalized_results", # expr
+   ".*",                         # meth
+   "mirna\\.quantification",     # mirn
+   ".*"                          # muta
+)
 names(file_filter) <- data_types
 
 barcode_list <- list()
@@ -30,12 +34,26 @@ barcode_list <- list()
 for(data_type in data_types){
   if (data_type == "muta"){
     # Specific method for muta -------------------------------------------------
-    filename <- fread(paste(raw_data_dir, cancer_type, "/", data_type,
-                            "/FILE_SAMPLE_MAP.txt", sep=""))[1,filename]
-    file_sample_map <- fread(paste(raw_data_dir, cancer_type, "/", data_type,
-                                   "/Somatic_Mutations/",
-                                   "WUSM__IlluminaGA_DNASeq_curated/Level_2/",
-                                   filename, sep=""), select=c(16))
+    filename <- fread(
+      paste(
+        raw_data_dir, cancer_type, "/", data_type,
+        "/FILE_SAMPLE_MAP.txt", sep=""
+      )
+    )[1,filename]
+    file_sample_map <- fread(
+      paste(
+        raw_data_dir, cancer_type, "/", data_type, "/Somatic_Mutations/",
+        switch(cancer_type, 
+          brca = "WUSM__IlluminaGA_DNASeq_curated",
+          prad = "BI__IlluminaGA_DNASeq_curated",
+          ov = "BCM__SOLiD_DNASeq_curated",
+          paad = "BI__IlluminaGA_DNASeq_curated"
+        ),
+        "/Level_2/", filename,
+        sep=""
+      ),
+      select=c(16)
+    )
     file_sample_map <- unique(file_sample_map)
     file_sample_map[, type:="muta_c"]
     barcode_list[[data_type]] <- file_sample_map
